@@ -1,7 +1,15 @@
 #include <iostream>
+#include <timing.h>
+#include <iomanip>
+#include <neuralNetworkCPU.h>
+#include <neuralNetworkGPU.cu>
+
+using namespace std;
 
 int main()
 {
+	float now, then, gTimeCost, cTimeCost;
+
 	int indata[8][8] = {
 							{ 1,1,1,1, 1,1,1,1},
 							{ 1,1,1,1, 1,1,1,1},
@@ -25,9 +33,32 @@ int main()
 		}
 
 
-	bpNeuralNetwork<int> myBPNN;
-	myBPNN.training( input,output,64,0.02f,100000l,fx);
+	//bpNeuralNetwork<int> myBPNN;
+	
+	//CPU Run and Timing Block.
+	then = currentTime();
+	//myBPNN.training( input,output,64,0.02f,100000l,fx);
+	now = currentTime();
+	cTimeCost = then - now;
+
+	//GPU Run and Timing Block.
+	then = currentTime();
+	//GPU Call
+	now = currentTime();
+	gTimeCost = then - now;
+
+	printTimes(gTimeCost, cTimeCost);
+
 	cout << "\n\n\n                Press any key to exit!";
 	getchar();
 	return 0;
+}
+
+//Takes the GPU and CPU time cost and prints the values and speedup factor. 
+void printTimes(float gTimeCost, float cTimeCost)
+{
+	cout << setprecision(3) << "Training the network via the CPU resulted in a time cost of " << cTimeCost << " in seconds.\n";
+    cout << setprecision(3) << "Training the network via the GPU resulted in a time cost of " << gTimeCost << " in seconds.\n";
+	cout << setprecision(3) << "Training with the GPU resulted in a speed up factor of " << cTimeCost/gTimeCost << ".\n";
+
 }
