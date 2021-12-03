@@ -1,5 +1,6 @@
 #include<iostream>
 #include <math.h>
+#include <vector>
 
 #include "Matrix.h"
 
@@ -10,7 +11,6 @@ enum Activation{TANH, SIGMOID};
 class NeuralNetworkGPU
 {
 private:
-
     Matrix neuralNetwork;
     Activation _activation;
 
@@ -18,9 +18,7 @@ public:
 
     NeuralNetworkGPU(Activation activation);
 
-    //code and idea for these two functions from: https://www.codeproject.com/Articles/5292985/Artificial-Neural-Network-Cplusplus-Class
-    float activationFunctionForward(float x);
-    float activationFunctionBackward(float x);
+    void initializeNN();
 
     void matrixMultiplication();
 
