@@ -6,24 +6,24 @@
 
 using namespace std;
 
-enum Activation{TANH, SIGMOID};
-
 class NeuralNetworkGPU
 {
 private:
-    Matrix neuralNetwork;
-    Activation _activation;
+
+    Matrix A;
+    Matrix Z;
+    Matrix dz;
+
+    float learning_rate;
 
 public:
 
-    NeuralNetworkGPU(Activation activation);
+    NeuralNetworkGPU(float learningRate);
 
-    void initializeNN();
-
-    void matrixMultiplication();
+    Matrix& forward(Matrix& Z);
+    Matrix& backPropagation(Matrix& dA);
 
     void test();
     void train();
-
 
 };
