@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <neuralNetworkCPU.h>
 #include <neuralNetworkGPU.h>
+#include <Matrix.h>
 
 using namespace std;
 
