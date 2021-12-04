@@ -14,14 +14,56 @@ NeuralNetworkGPU::NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int 
 
 }
 
-__device__ Sigmoid(float x) {return 1.0f / (1.0f + exp(-x)); }
+__device__ float Sigmoid(float x) {return 1.0f / (1.0f + exp(-x)); }
 
-__global__ void forward(float* Z, float* A, int Z_x_dim, int Z_y_dim)
+__global__ void forwardHidden(float* weightHidden, float* inData, float* valuesHidden, float numNeuronsHidden, float numNeuronsIn)
+{
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    float value = 0;
+
+    for(int i = 0; i < numNeuronsHidden; i++)
+    {
+        for(int j = 0; j < numNeuronsIn; j++)
+            value = value + inData[j] * weightHidden[i + ((j + 1) * numNeuronsHidden)]; //double check the postion in the weightsHidden array
+        
+        value = value + weightHidden[i];
+        valuesHidden[i] = Sigmoid(static_cast<float>(value));
+        
+    }
+}
+
+__global__ void forwardOut(float* weightOut, float* valuesOut, float* valuesHidden, float numNeuronsHidden, float numNeuronsOut)
+{
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    float value = 0;
+
+    for(int i = 0; i < numNeuronsOut; i++)
+    {
+
+        for(int j = 0; j < numNeuronsHidden; j++)
+            value = value + valuesHidden[j] * weightOut[i + ((j + 1) * numNeuronsOut)]; //double check
+        
+        value = value + weightOut[i];
+        valuesOut[i] = Sigmoid(static_cast<float>(value));
+    }
+}
+__global__ void backPropagationY_Error(float* yError, float* valuesOut, float* trueOut, float numNeuronsOut)
 {
 
 }
 
-__global__ void backPropagation(float* Z, float* dA, float* dZ, int Z_x_dim, int Z_y_dim)
+__global__ void backPropagationH_Error(float* yError, float* hError, float* valuesHidden, float* weightOut, float numNeuronsOut)
+{
+
+}
+
+__global__ void adjustWeights(float* weightOut, float* yError, float* hError, float* weightHidden, float* inData, float learningRate, float numNeuronIn, float numNeuronHidden, float numNeuronOut)
 {
 
 }
