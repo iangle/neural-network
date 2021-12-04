@@ -34,8 +34,8 @@ public:
     NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int numNeuronOutput, float learningRate);
 
     //forward and backward propagation through the network
-    Matrix& forward(Matrix& Z);
-    Matrix& backPropagation(Matrix& dA);
+    void forward();
+    void backPropagation();
 
     //train the neural network
     void train();
