@@ -1,55 +1,116 @@
 #include "neuralNetworkGPU.h"
 
-NeuralNetworkGPU::NeuralNetworkGPU(float learningRate)
+NeuralNetworkGPU::NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int numNeuronOutput, float learningRate)
 {
     learning_rate = learningRate;
+
+    _numNeuronInput = numNeuronInput;
+    _numNeuronHidden = numNeuronHidden;
+    _numNeuronOut = numNeuronOutput;
+
+    allocateMemoryCPU();
+
+    initializeNN();
+
 }
 
-__device__ Sigmoid(float x) {return 1.0f / (1.0f + exp(-x)); }
+__device__ float Sigmoid(float x) {return 1.0f / (1.0f + exp(-x)); }
 
-__global__ void hiddenLayerForward(float* Z, float* A, int Z_x_dim, int Z_y_dim)
+__global__ void forwardHidden(float* weightHidden, float* inData, float* valuesHidden, float numNeuronsHidden, float numNeuronsIn)
 {
-    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if(index < (Z_x_dim * Z_y_dim))
-        A[index] = Sigmoid(Z[index]);
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    float value = 0;
+
+    for(int i = 0; i < numNeuronsHidden; i++)
+    {
+        for(int j = 0; j < numNeuronsIn; j++)
+            value = value + inData[j] * weightHidden[i + ((j + 1) * numNeuronsHidden)]; //double check the postion in the weightsHidden array
+        
+        value = value + weightHidden[i];
+        valuesHidden[i] = Sigmoid(static_cast<float>(value));
+        
+    }
 }
 
-__global__ void hiddenLayerBackPropagation(float* Z, float* dA, float* dZ, int Z_x_dim, int Z_y_dim)
+__global__ void forwardOut(float* weightOut, float* valuesOut, float* valuesHidden, float numNeuronsHidden, float numNeuronsOut)
 {
-    int index = blockIdx.x * blockDim.x + threadIdx.x;
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if(index < (Z_x_dim * Z_y_dim))
-        A[index] = dA[index] * Sigmoid(Z[index]) * (1-sigmoid(Z[]index));
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    float value = 0;
+
+    for(int i = 0; i < numNeuronsOut; i++)
+    {
+
+        for(int j = 0; j < numNeuronsHidden; j++)
+            value = value + valuesHidden[j] * weightOut[i + ((j + 1) * numNeuronsOut)]; //double check
+        
+        value = value + weightOut[i];
+        valuesOut[i] = Sigmoid(static_cast<float>(value));
+    }
+}
+__global__ void backPropagationY_Error(float* yError, float* valuesOut, float* trueOut, float numNeuronsOut)
+{
+
 }
 
-Matrix& NeuralNetworkGPU::forward(Matrix& Z)
+__global__ void backPropagationH_Error(float* yError, float* hError, float* valuesHidden, float* weightOut, float numNeuronsOut)
 {
-    this->Z = Z;
 
-    A.allocateMemoryIfNotAllocated(Z.shape);
-
-    dim3 block_size(256);
-    dim3 num_blocks((Z.shape.y * Z.shape.x + block_size.x - 1) / block_size.x);
-
-    hiddenLayerForward<<<num_blocks, block_size>>>(Z.data_device.get(), A.data_device.get(), Z.shape.x, Z.shape.y);
-
-    return A;
 }
 
-Matrix& NeuralNetworkGPU::backPropagation(Matrix& dA)
+__global__ void adjustWeights(float* weightOut, float* yError, float* hError, float* weightHidden, float* inData, float learningRate, float numNeuronIn, float numNeuronHidden, float numNeuronOut)
 {
-    dZ.allocateMemoryIfNotAllocated(Z.shape);
 
-    dim3 block_size(256);
-    dim3 num_blocks((Z.shape.y * Z.shape.x + block_size.x - 1) / block_size.x);
+}
 
-    hiddenLayerBackPropagation<<<num_blocks, block_size>>>(Z.data_device.get(), dA.data_device.get(), dZ.data_device.get(), Z.shape.x, Z.shape.y);
+void NeuralNetworkGPU::forward()
+{
 
-    return dZ;
+}
+
+void NeuralNetworkGPU::backPropagation()
+{
+
 }
 
 void NeuralNetworkGPU::initializeNN()
 {
+    //initialize our random seed
+    srand ((unsigned)time(NULL));
 
+    //initialize the hidden layer with random numbers between (-.5,.5)
+    for(int i = 0; i < _numNeuronHidden; i++)
+    {
+        weightsHidden[i] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+
+        for(int j = 1; j < _numNeuronInput + 1; j++)
+            weightsHidden[i + (j * _numNeuronHidden)] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+        
+    }
+
+    //initialize the output layer with random numbers between (-.5,.5)
+    for(int i = 0; i < _numNeuronOut; i++)
+    {
+        weightsOut[i] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+
+        for(int j = 1; j < _numNeuronHidden + 1; j++)
+            weightsOut[i + (j * _numNeuronOut)] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+
+    }
+}
+
+void NeuralNetworkGPU::allocateMemoryCPU()
+{
+    //these two are 2D arrays that are flattened into a 1D array
+    weightsHidden = (float*) malloc(_numNeuronHidden * (_numNeuronInput + 1) * sizeof(float));
+    weightsOut = (float*) malloc(_numNeuronOut * (_numNeuronHidden + 1) * sizeof(float));
+
+    //these are 1D arrays
+    valuesHidden = (float*) malloc(_numNeuronHidden * sizeof(float));
+    valuesOut = (float*) malloc(_numNeuronOut * sizeof(float));
 }
