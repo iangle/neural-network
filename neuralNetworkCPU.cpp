@@ -16,12 +16,9 @@
 #include <string.h>
 //#include <conio.h>
 
-
 #define numIn_ 2
 #define numH_ 3
 #define numOut_ 1
-
-
 
 using namespace std;
 

@@ -33,17 +33,17 @@ int main()
 		}
 
 
-	//bpNeuralNetwork<int> myBPNN;
+	neuralNetworkCPU::bpNeuralNetwork<int> myBPNN;
 	
 	//CPU Run and Timing Block.
 	then = currentTime();
-	//myBPNN.training( input,output,64,0.02f,100000l,fx);
+	myBPNN.training( input,output,64,0.02f,100000l,fx);
 	now = currentTime();
 	cTimeCost = then - now;
 
 	//GPU Run and Timing Block.
 	then = currentTime();
-	//GPU Call
+	//GPU Calls
 	now = currentTime();
 	gTimeCost = then - now;
 

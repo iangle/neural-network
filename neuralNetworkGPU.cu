@@ -16,66 +16,79 @@ NeuralNetworkGPU::NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int 
 
 __device__ float Sigmoid(float x) {return 1.0f / (1.0f + exp(-x)); }
 
-__global__ void forwardHidden(float* weightHidden, float* inData, float* valuesHidden, float numNeuronsHidden, float numNeuronsIn)
+__global__ void forwardHidden(float* weightHidden, float* valuesHidden, float* weightOut, float* valuesOut, 
+float* yError, float* hError, float* trueOut, float* results, float numNeuronsHidden, float numNeuronsIn, float numNeuronsOut, float learningRate, int numInputValuesX, int numInputValuesY)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
 
     int y = blockIdx.y * blockDim.y + threadIdx.y;
 
+    int idx = y * numInputValuesX + x;
+
+
     float value = 0;
 
+    // compute valuesHidden
     for(int i = 0; i < numNeuronsHidden; i++)
     {
-        for(int j = 0; j < numNeuronsIn; j++)
-            value = value + inData[j] * weightHidden[i + ((j + 1) * numNeuronsHidden)]; //double check the postion in the weightsHidden array
-        
-        value = value + weightHidden[i];
-        valuesHidden[i] = Sigmoid(static_cast<float>(value));
+        value = value + x * weightHidden[i + numNeuronsHidden + idx * numNeuronsHidden];
+        value = value + y * weightHidden[i + (2 * numNeuronsHidden) + idx * numNeuronsHidden]; //double check
+        value = value + weightHidden[i + idx * numNeuronsHidden];
+        valuesHidden[i + idx * numNeuronsHidden] = Sigmoid(static_cast<float>(value));
         
     }
-}
+    
+    value = 0;
 
-__global__ void forwardOut(float* weightOut, float* valuesOut, float* valuesHidden, float numNeuronsHidden, float numNeuronsOut)
-{
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
-
-    float value = 0;
-
+    // compute valuesOut
     for(int i = 0; i < numNeuronsOut; i++)
     {
 
         for(int j = 0; j < numNeuronsHidden; j++)
-            value = value + valuesHidden[j] * weightOut[i + ((j + 1) * numNeuronsOut)]; //double check
+            value = value + valuesHidden[j + idx * numNeuronsHidden] * weightOut[i + ((j + 1) * numNeuronsOut) + idx * numNeuronsHidden]; //double check
         
-        value = value + weightOut[i];
-        valuesOut[i] = Sigmoid(static_cast<float>(value));
+        value = value + weightOut[i + idx * numNeuronsOut];
+        valuesOut[i + idx * numNeuronsOut] = Sigmoid(static_cast<float>(value));
     }
-}
-__global__ void backPropagationY_Error(float* yError, float* valuesOut, float* trueOut, float numNeuronsOut)
-{
 
-}
+    // backwards prop
 
-__global__ void backPropagationH_Error(float* yError, float* hError, float* valuesHidden, float* weightOut, float numNeuronsOut)
-{
+    //compute yError
+    for(int i = 0; i < numNeuronsOut; i++)
+    {
+        yError[i + idx * numNeuronsOut] = valuesOut[i + idx * numNeuronsOut] * (1 - valuesOut[i + idx * numNeuronsOut]) * (valuesOut[i + idx * numNeuronsOut] - trueOut[i + idx * numNeuronsOut]);
+    }
 
-}
+    //compute hError
+    for (int i = 0; i < numNeuronsHidden; i++)
+    {
+        temp = 0;
+		for(j = 0; j < numNeuronsOut; j++)
+			temp = temp + weightOut[j + (numNeuronsHidden + 1) + idx * numNeuronsOut] * yError[j + idx * numNeuronsOut];
+        hError[i + idx * numNeuronsHidden] = temp * valuesHidden[i + idx * numNeuronsHidden] * (1 - valuesHidden[i + idx * numNeuronsHidden]);
+    }
 
-__global__ void adjustWeights(float* weightOut, float* yError, float* hError, float* weightHidden, float* inData, float learningRate, float numNeuronIn, float numNeuronHidden, float numNeuronOut)
-{
+    for(int i = 0; i < numNeuronsOut; i++)
+        weightOut[i + idx * numNeuronsOut] = weightOut[i + idx * numNeuronsOut] - (learningRate * yError[i + idx * numNeuronsOut]);
+    
+    for(int i = 0; i < numNeuronsOut; i++)
+    {
+        for(int j = 0; j < numNeuronsHidden; j++)
+        {
+            weightOut[i + (j + 1) * numNeuronsHidden] = weightOut[i + (j + 1) * numNeuronsHidden] - (learningRate * yError[i + idx * numNeuronsOut] * valuesHidden[j + idx * numNeuronsHidden]);
+        }
+    }
 
-}
+    for (int i = 0; i < numNeuronsHidden; i++)
+    {
+        weightHidden[i + idx * numNeuronsOut] = weightHidden[i + idx * numNeuronsOut] - (learningRate * hError[i + idx * numNeuronsOut]);
+        for (int j = 0; j < numNeuronsIn; j++)
+        {
+            weightHidden[i + (j + 1) * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * value[j + idx * numNeuronsHidden]);
+        }
+    }
 
-void NeuralNetworkGPU::forward()
-{
-
-}
-
-void NeuralNetworkGPU::backPropagation()
-{
-
+    results[idx] = valuesOut[idx];
 }
 
 void NeuralNetworkGPU::initializeNN()
@@ -86,10 +99,10 @@ void NeuralNetworkGPU::initializeNN()
     //initialize the hidden layer with random numbers between (-.5,.5)
     for(int i = 0; i < _numNeuronHidden; i++)
     {
-        weightsHidden[i] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+        weightHidden[i] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
 
         for(int j = 1; j < _numNeuronInput + 1; j++)
-            weightsHidden[i + (j * _numNeuronHidden)] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+            weightHidden[i + (j * _numNeuronHidden)] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
         
     }
 
@@ -107,10 +120,10 @@ void NeuralNetworkGPU::initializeNN()
 void NeuralNetworkGPU::allocateMemoryCPU()
 {
     //these two are 2D arrays that are flattened into a 1D array
-    weightsHidden = (float*) malloc(_numNeuronHidden * (_numNeuronInput + 1) * sizeof(float));
-    weightsOut = (float*) malloc(_numNeuronOut * (_numNeuronHidden + 1) * sizeof(float));
+    weightHidden = malloc(_numNeuronHidden * (_numNeuronInput + 1) * numInputValuesX * numInputValuesY * sizeof(float));
+    weightsOut = malloc(_numNeuronOut * (_numNeuronHidden + 1) * numInputValuesX * numInputValuesY * sizeof(float));
 
     //these are 1D arrays
-    valuesHidden = (float*) malloc(_numNeuronHidden * sizeof(float));
-    valuesOut = (float*) malloc(_numNeuronOut * sizeof(float));
+    valuesHidden = malloc(_numNeuronHidden * numInputValuesX * numInputValuesY * sizeof(float));
+    valuesOut = malloc(_numNeuronOut * numInputValuesX * numInputValuesY * sizeof(float));
 }

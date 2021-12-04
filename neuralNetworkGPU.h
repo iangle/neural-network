@@ -2,8 +2,6 @@
 #include <math.h>
 #include <vector>
 
-#include "Matrix.h"
-
 using namespace std;
 
 class NeuralNetworkGPU
@@ -31,11 +29,7 @@ private:
 public:
 
     //default constructor
-    NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int numNeuronOutput, float learningRate);
-
-    //forward and backward propagation through the network
-    void forward();
-    void backPropagation();
+    NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int numNeuronOutput, float learningRate, int numInputValuesX, int numInputValuesY);
 
     //train the neural network
     void train();
