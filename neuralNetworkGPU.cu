@@ -89,8 +89,8 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     {
         weightHidden[i + idx * numNeuronsOut] = weightHidden[i + idx * numNeuronsOut] - (learningRate * hError[i + idx * numNeuronsOut]);
 
-        weightHidden[i + 1 * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * x);
-        weightHidden[i + 2 * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y);
+        weightHidden[i + 1 * numNeuronsHidden] = weightHidden[i + 1 * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * x);
+        weightHidden[i + 2 * numNeuronsHidden] = weightHidden[i + 2 * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y);
     }
 
     results[idx] = valuesOut[idx];
@@ -160,8 +160,8 @@ float* NeuralNetworkGPU::train(int numIterations, int tile_width)
     cudaMalloc(&cudaValuesHidden, _numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
     cudaMalloc(&cudaWeightOut, _numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
     cudaMalloc(&cudaValuesOut, _numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
-    cudaMalloc(&cudaYError, _numNeuronsOut * _numInputValuesX * _numInputValuesY * sizeof(float));
-    cudaMalloc(&cudaHError, _numNeuronsHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaYError, _numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaHError, _numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
     cudaMalloc(&cudaTrueOut, n * sizeof(float));
     cudaMalloc(&cudaResults, n * sizeof(float));
 
@@ -169,12 +169,12 @@ float* NeuralNetworkGPU::train(int numIterations, int tile_width)
     cudaMemcpy(cudaValuesHidden, valuesHidden, _numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(cudaWeightOut, weightsOut, _numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(cudaValuesOut, valuesOut, _numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemvpy(cudaTrueOut, _valuesIn, n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(cudaTrueOut, _valuesIn, n * sizeof(float), cudaMemcpyHostToDevice);
 
     for(int i = 0; i < numIterations; i++)
     {
         forwardHidden<<<grid, block>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut, cudaYError, cudaHError, cudaTrueOut,
-         cudaResults, _numNeuronsHidden, _numneuronsIn, _numNeuronsOut, learning_rate, _numInputValuesX, numInputValuesY);
+         cudaResults, _numNeuronsHidden, _numNeuronsIn, _numNeuronsOut, learning_rate, _numInputValuesX, _numInputValuesY);
 
          cudaDeviceSynchronize();
     }
