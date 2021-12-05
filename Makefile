@@ -7,10 +7,10 @@ project: cpuNN.o gpuNN.o main.cu
 	$(CC) -o project cpuNN.o gpuNN.o main.o
 
 cpuNN.o: neuralNetworkCPU.cpp neuralNetworkCPU.h
-	$(CC) -o neuralNetworkCPU.cpp neuralNetworkCPU.h
+	$(C) -o neuralNetworkCPU.cpp
 
 gpuNN.o: neuralNetworkGPU.cu neuralNetworkGPU.h
-	${CC} -o neuralNetworkGPU.cu neuralNetworkGPU.h
+	${CC} -o neuralNetworkGPU.cu
 
 main.o: main.cu
 	${CC} -o main.cu
