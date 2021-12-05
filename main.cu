@@ -29,6 +29,8 @@ int main()
 
 	int* GPUOutput = (int*) malloc(xSize * ySize * sizeof(int));
 
+	float* GPUAnswer = (float*) malloc(xSize * ySize * sizeof(float));
+
 	for(i = 0; i < 8; i ++)
 		for(j = 0; j< 8; j++)
 		{
@@ -53,7 +55,7 @@ int main()
 	
 	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
 
-	GPUOutput = NN_GPU.train(1000, 256);
+	GPUAnswer = NN_GPU.train(1000, 256);
 
 	now = currentTime();
 	gTimeCost = then - now;
