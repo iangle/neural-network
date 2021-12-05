@@ -21,7 +21,13 @@ int main()
 							{ 0,0,0,1, 1,1,1,1}
 						};
 	float fx(float);
+
+	int xSize = 8;
+	int ySize = 8;
+
 	int i,j,k = 0,input[64][2] = {0},output[64][1] = {0};
+
+	int* GPUOutput = (int*) malloc(xSize * ySize * sizeof(int));
 
 	for(i = 0; i < 8; i ++)
 		for(j = 0; j< 8; j++)
@@ -29,6 +35,7 @@ int main()
 			input[k][0] = i;
 			input[k][1] = j;
 			output[k][0] = indata[i][j];
+			GPUOutput[k] = output[k][0];
 			k ++;
 		}
 
@@ -44,7 +51,7 @@ int main()
 	//GPU Run and Timing Block.
 	then = currentTime();
 	
-	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU = new NeuralNetworkGPU(output, 2, 3, 1, 8, 8, 0.02f);
+	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU = new NeuralNetworkGPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
 
 	NN_GPU.train(1000, 256);
 
