@@ -51,14 +51,12 @@ int main()
 	//GPU Run and Timing Block.
 	then = currentTime();
 	
-	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU = new NeuralNetworkGPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
+	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
 
-	NN_GPU.train(1000, 256);
+	GPUOutput = NN_GPU.train(1000, 256);
 
 	now = currentTime();
 	gTimeCost = then - now;
-
-	printTimes(gTimeCost, cTimeCost);
 
 	cout << "\n\n\n                Press any key to exit!";
 	getchar();
