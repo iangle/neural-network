@@ -20,7 +20,7 @@ NeuralNetworkGPU::NeuralNetworkGPU(float* valuesIn, int numNeuronInput, int numN
 __device__ float Sigmoid(float x) {return 1.0f / (1.0f + exp(-x)); }
 
 __global__ void forwardHidden(float* weightHidden, float* valuesHidden, float* weightOut, float* valuesOut, 
-float* yError, float* hError, float* trueOut, float* results, float numNeuronsHidden, float numNeuronsIn, float numNeuronsOut, float learningRate, int numInputValuesX, int numInputValuesY)
+float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidden, int numNeuronsIn, int numNeuronsOut, float learningRate, int numInputValuesX, int numInputValuesY)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
 
