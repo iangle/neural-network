@@ -88,10 +88,9 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     for (int i = 0; i < numNeuronsHidden; i++)
     {
         weightHidden[i + idx * numNeuronsOut] = weightHidden[i + idx * numNeuronsOut] - (learningRate * hError[i + idx * numNeuronsOut]);
-        for (int j = 0; j < numNeuronsIn; j++)
-        {
-            weightHidden[i + (j + 1) * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * value[j + idx * numNeuronsHidden]);
-        }
+
+        weightHidden[i + (j + 1) * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * x;
+        weightHidden[i + (j + 1) * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y;
     }
 
     results[idx] = valuesOut[idx];
