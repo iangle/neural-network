@@ -13,7 +13,7 @@ gpuNN.o: neuralNetworkGPU.cu neuralNetworkGPU.h
 	${CC} -c neuralNetworkGPU.cu
 
 timing.o: timing.cpp timing.h
-	${CC} -c timing.cpp
+	${C} -c timing.cpp
 
 main.o: main.cu
 	${CC} -c main.cu
