@@ -33,7 +33,7 @@ int main()
 		}
 
 
-	neuralNetworkCPU::bpNeuralNetwork<int> myBPNN;
+	bpNeuralNetwork<int> myBPNN;
 	
 	//CPU Run and Timing Block.
 	then = currentTime();
