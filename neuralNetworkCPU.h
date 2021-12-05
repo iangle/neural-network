@@ -17,7 +17,7 @@ class neuralNetworkCPU
             bpNeuralNetwork(int nIn, int nH, int nOut);
             bpNeuralNetwork(const bpNeuralNetwork& initBP);
             ~bpNeuralNetwork();
-            void training(T trainData[64][numIn_], int trueOut[64][numOut_], const int numTrainSample, const float learnRate, const long maxNumTrainIterate, float (*pLogisticFun)(float));
+            void training(T trainData, int trueOut, const int numTrainSample, const float learnRate, const long maxNumTrainIterate, float (*pLogisticFun)(float));
             void classifybp();
     };
 
