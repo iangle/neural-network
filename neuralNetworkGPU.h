@@ -23,9 +23,9 @@ private:
     void allocateMemoryCPU();
 
     //the size of the neural network layers
-    int _numNeuronInput = 0;
-    int _numNeuronHidden = 0;
-    int _numNeuronOut = 0;
+    int _numNeuronInput;
+    int _numNeuronHidden;
+    int _numNeuronOut;
     int _numInputValuesX;
     int _numInputValuesY;
 
