@@ -66,9 +66,11 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     //compute hError
     for (int i = 0; i < numNeuronsHidden; i++)
     {
-        temp = 0;
-		for(j = 0; j < numNeuronsOut; j++)
+        int temp = 0;
+
+		for(int j = 0; j < numNeuronsOut; j++)
 			temp = temp + weightOut[j + (numNeuronsHidden + 1) + idx * numNeuronsOut] * yError[j + idx * numNeuronsOut];
+
         hError[i + idx * numNeuronsHidden] = temp * valuesHidden[i + idx * numNeuronsHidden] * (1 - valuesHidden[i + idx * numNeuronsHidden]);
     }
 
@@ -103,10 +105,10 @@ void NeuralNetworkGPU::initializeNN()
     //initialize the hidden layer with random numbers between (-.5,.5)
     for(int i = 0; i < _numNeuronHidden; i++)
     {
-        weightHidden[i] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+        weightsHidden[i] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
 
         for(int j = 1; j < _numNeuronInput + 1; j++)
-            weightHidden[i + (j * _numNeuronHidden)] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
+            weightsHidden[i + (j * _numNeuronHidden)] = static_cast<float>((rand() % 10000 + 1 - 5000)) / 10000.0f;
         
     }
 
@@ -132,7 +134,7 @@ void NeuralNetworkGPU::allocateMemoryCPU()
     valuesOut = malloc(_numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
 }
 
-void NeuralNetworkGPU::train(int numIterations, int tile_width)
+float* NeuralNetworkGPU::train(int numIterations, int tile_width)
 {
     int num_block = ceil((_numInputValuesX * _numInputValuesY) / (float) tile_width);
 
@@ -143,8 +145,14 @@ void NeuralNetworkGPU::train(int numIterations, int tile_width)
     dim3 grid(num_block, 1, 1);
 
     //create some arrays that we will allocate on the device
-    float* cudaWeightHidden, float* cudaValuesHidden, float* cudaWeightOut, float* cudaValuesOut, 
-    float* cudaYError, float* cudaHError, float* cudaTrueOut, float* cudaResults;
+    float* cudaWeightHidden;
+    float* cudaValuesHidden;
+    float* cudaWeightOut;
+    float* cudaValuesOut; 
+    float* cudaYError;
+    float* cudaHError;
+    float* cudaTrueOut;
+    float* cudaResults;
 
     float* results = malloc(n * sizeof(float));
 
