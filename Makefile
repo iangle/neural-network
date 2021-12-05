@@ -3,7 +3,7 @@ C = g++
 
 make: project
 
-project: cpuNN.o gpuNN.o timing.o main.o
+project: main.o cpuNN.o gpuNN.o timing.o 
 	$(CC) -c cpuNN.o gpuNN.o timing.o main.o
 
 cpuNN.o: neuralNetworkCPU.cpp neuralNetworkCPU.h
