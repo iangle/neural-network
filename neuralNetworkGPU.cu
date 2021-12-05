@@ -89,8 +89,8 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     {
         weightHidden[i + idx * numNeuronsOut] = weightHidden[i + idx * numNeuronsOut] - (learningRate * hError[i + idx * numNeuronsOut]);
 
-        weightHidden[i + (j + 1) * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * x;
-        weightHidden[i + (j + 1) * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y;
+        weightHidden[i + 1 * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * x);
+        weightHidden[i + 2 * numNeuronsHidden] = weightHidden[i + (j + 1) * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y);
     }
 
     results[idx] = valuesOut[idx];
@@ -125,7 +125,7 @@ void NeuralNetworkGPU::initializeNN()
 void NeuralNetworkGPU::allocateMemoryCPU()
 {
     //these two are 2D arrays that are flattened into a 1D array
-    weightHidden = malloc(_numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
+    weightsHidden = malloc(_numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
     weightsOut = malloc(_numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
 
     //these are 1D arrays
@@ -180,6 +180,21 @@ float* NeuralNetworkGPU::train(int numIterations, int tile_width)
     }
 
     cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
+
+    cudaFree(cudaWeightHidden);
+    cudaFree(cudaValuesHidden);
+    cudaFree(cudaWeightOut);
+    cudaFree(cudaValuesOut);
+    cudaFree(cudaYError);
+    cudaFree(cudaHError);
+    cudaFree(cudaTrueOut);
+    cudaFree(cudaResults);
+
+    free(weightsHidden);  
+    free(valuesHidden);
+    free(weightsOut);
+    free(valuesOut);
+    free(_valuesIn);
 
     return results;
 
