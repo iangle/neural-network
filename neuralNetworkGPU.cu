@@ -153,7 +153,7 @@ float* NeuralNetworkGPU::train(int numIterations, int tile_width)
     float* cudaTrueOut;
     float* cudaResults;
 
-    float* results = malloc(n * sizeof(float));
+    float* results = (float*) malloc(n * sizeof(float));
 
     //allocate memory on the device
     cudaMalloc(&cudaWeightHidden, _numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
@@ -174,7 +174,7 @@ float* NeuralNetworkGPU::train(int numIterations, int tile_width)
     for(int i = 0; i < numIterations; i++)
     {
         forwardHidden<<<grid, block>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut, cudaYError, cudaHError, cudaTrueOut,
-         cudaResults, _numNeuronHidden, _numNeuronIn, _numNeuronOut, learning_rate, _numInputValuesX, _numInputValuesY);
+         cudaResults, _numNeuronHidden, _numNeuronInput, _numNeuronOut, learning_rate, _numInputValuesX, _numInputValuesY);
 
          cudaDeviceSynchronize();
     }
