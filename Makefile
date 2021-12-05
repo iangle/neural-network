@@ -1,12 +1,10 @@
 CC = nvcc
+C = g++
 
 make: project
 
-project: matrix.o cpuNN.o gpuNN.o
-	$(CC) -o project matrix.o cpuNN.o gpuNN.o
-
-matrix.o: Matrix.cu Matrix.h
-	$(CC) -o Matrix.cu
+project: cpuNN.o gpuNN.o main.cu
+	$(CC) -o project cpuNN.o gpuNN.o main.o
 
 cpuNN.o: neuralNetworkCPU.cpp neuralNetworkCPU.h
 	$(CC) -o neuralNetworkCPU.cpp
@@ -14,5 +12,7 @@ cpuNN.o: neuralNetworkCPU.cpp neuralNetworkCPU.h
 gpuNN.o: neuralNetworkGPU.cu neuralNetworkGPU.h
 	${CC} -o neuralNetworkGPU.cu
 
+main.o: main.cu
+	${CC} -o main.cu
 clean:
 	$(RM) project *.o
