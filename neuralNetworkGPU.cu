@@ -1,6 +1,6 @@
 #include "neuralNetworkGPU.h"
 
-NeuralNetworkGPU::NeuralNetworkGPU(float* valuesIn, int numNeuronInput, int numNeuronHidden, int numNeuronOutput, int numInputValuesX, int numInputValuesY, float learningRate)
+NeuralNetworkGPU::NeuralNetworkGPU(int* valuesIn, int numNeuronInput, int numNeuronHidden, int numNeuronOutput, int numInputValuesX, int numInputValuesY, float learningRate)
 {
     learning_rate = learningRate;
 

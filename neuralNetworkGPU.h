@@ -13,7 +13,7 @@ private:
     float* weightsOut;
     float* valuesHidden;
     float* valuesOut;
-    float* _valuesIn;
+    int* _valuesIn;
 
     //the learning rate of the backpropagation of the neural network
     float learning_rate;
