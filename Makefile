@@ -4,7 +4,7 @@ CC = g++
 make: project
 
 project: gpuNN.o timing.o main.o
-	$(NVCC) -o neuralNetwork cpuNN.o gpuNN.o timing.o main.o
+	$(NVCC) -o neuralNetwork gpuNN.o timing.o main.o
 
 #cpuNN.o: neuralNetworkCPU.cpp
 #	$(CC) -c neuralNetworkCPU.cpp
