@@ -125,12 +125,12 @@ void NeuralNetworkGPU::initializeNN()
 void NeuralNetworkGPU::allocateMemoryCPU()
 {
     //these two are 2D arrays that are flattened into a 1D array
-    weightsHidden = malloc(_numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
-    weightsOut = malloc(_numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
+    weightsHidden = (float*) malloc(_numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
+    weightsOut = (float*) malloc(_numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
 
     //these are 1D arrays
-    valuesHidden = malloc(_numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
-    valuesOut = malloc(_numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
+    valuesHidden = (float*) malloc(_numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
+    valuesOut = (float*) malloc(_numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
 }
 
 float* NeuralNetworkGPU::train(int numIterations, int tile_width)
@@ -174,7 +174,7 @@ float* NeuralNetworkGPU::train(int numIterations, int tile_width)
     for(int i = 0; i < numIterations; i++)
     {
         forwardHidden<<<grid, block>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut, cudaYError, cudaHError, cudaTrueOut,
-         cudaResults, _numNeuronsHidden, _numNeuronsIn, _numNeuronsOut, learning_rate, _numInputValuesX, _numInputValuesY);
+         cudaResults, _numNeuronHidden, _numNeuronIn, _numNeuronOut, learning_rate, _numInputValuesX, _numInputValuesY);
 
          cudaDeviceSynchronize();
     }
