@@ -9,11 +9,11 @@ project: main.o gpuNN.o timing.o
 #cpuNN.o: neuralNetworkCPU.cpp
 #	$(CC) -c neuralNetworkCPU.cpp
 
-gpuNN.o: neuralNetworkGPU.cu neuralNetworkGPU.h
+gpuNN.o: neuralNetworkGPU.h neuralNetworkGPU.cu
 	${NVCC} -arch=sm_52 -c neuralNetworkGPU.cu
 
-timing.o: timing.cpp timing.h
-	${CC} -c timing.cpp
+timing.o: timing.h timing.cpp 
+	${CC} -c -o timing.o timing.cpp -I.
 
 main.o: main.cu
 	${NVCC} -arch=sm_52 -c main.cu
