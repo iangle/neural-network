@@ -13,6 +13,7 @@ private:
     float* weightsOut;
     float* valuesHidden;
     float* valuesOut;
+    float* _valuesIn;
 
     //the learning rate of the backpropagation of the neural network
     float learning_rate;
@@ -25,13 +26,15 @@ private:
     int _numNeuronInput = 0;
     int _numNeuronHidden = 0;
     int _numNeuronOut = 0;
+    int _numInputValuesX;
+    int _numInputValuesY;
 
 public:
 
     //default constructor
-    NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int numNeuronOutput, float learningRate, int numInputValuesX, int numInputValuesY);
+    NeuralNetworkGPU(float* valuesIn, int numNeuronInput, int numNeuronHidden, int numNeuronOutput,int numInputValuesX, int numInputValuesY, float learningRate);
 
     //train the neural network
-    void train();
+    float* train(int numIterations, int tile_width);
 
 };

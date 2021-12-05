@@ -44,7 +44,11 @@ int main()
 
 	//GPU Run and Timing Block.
 	then = currentTime();
-	//GPU Calls
+	
+	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU = new NeuralNetworkGPU(output, 2, 3, 1, 8, 8, 0.02f);
+
+	NN_GPU.train(1000, 256);
+
 	now = currentTime();
 	gTimeCost = then - now;
 

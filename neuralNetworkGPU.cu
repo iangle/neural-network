@@ -1,12 +1,15 @@
 #include "neuralNetworkGPU.h"
 
-NeuralNetworkGPU::NeuralNetworkGPU(int numNeuronInput, int numNeuronHidden, int numNeuronOutput, float learningRate)
+NeuralNetworkGPU::NeuralNetworkGPU(float* valuesIn, int numNeuronInput, int numNeuronHidden, int numNeuronOutput, int numInputValuesX, int numInputValuesY, float learningRate)
 {
     learning_rate = learningRate;
 
     _numNeuronInput = numNeuronInput;
     _numNeuronHidden = numNeuronHidden;
     _numNeuronOut = numNeuronOutput;
+    _numInputValuesX = numInputValuesX;
+    _numInputValuesY = numInputValuesY;
+    _valuesIn = valuesIn;
 
     allocateMemoryCPU();
 
@@ -25,6 +28,7 @@ float* yError, float* hError, float* trueOut, float* results, float numNeuronsHi
 
     int idx = y * numInputValuesX + x;
 
+    if(x >= numInputValuesX || y >= numInputValuesY) return;
 
     float value = 0;
 
@@ -120,10 +124,56 @@ void NeuralNetworkGPU::initializeNN()
 void NeuralNetworkGPU::allocateMemoryCPU()
 {
     //these two are 2D arrays that are flattened into a 1D array
-    weightHidden = malloc(_numNeuronHidden * (_numNeuronInput + 1) * numInputValuesX * numInputValuesY * sizeof(float));
-    weightsOut = malloc(_numNeuronOut * (_numNeuronHidden + 1) * numInputValuesX * numInputValuesY * sizeof(float));
+    weightHidden = malloc(_numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
+    weightsOut = malloc(_numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
 
     //these are 1D arrays
-    valuesHidden = malloc(_numNeuronHidden * numInputValuesX * numInputValuesY * sizeof(float));
-    valuesOut = malloc(_numNeuronOut * numInputValuesX * numInputValuesY * sizeof(float));
+    valuesHidden = malloc(_numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
+    valuesOut = malloc(_numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
+}
+
+void NeuralNetworkGPU::train(int numIterations, int tile_width)
+{
+    int num_block = ceil((_numInputValuesX * _numInputValuesY) / (float) tile_width);
+
+    int n = _numInputValuesX * _numInputValuesY;
+
+    //create our blocks and grids
+    dim3 block(tile_width, 1, 1);
+    dim3 grid(num_block, 1, 1);
+
+    //create some arrays that we will allocate on the device
+    float* cudaWeightHidden, float* cudaValuesHidden, float* cudaWeightOut, float* cudaValuesOut, 
+    float* cudaYError, float* cudaHError, float* cudaTrueOut, float* cudaResults;
+
+    float* results = malloc(n * sizeof(float));
+
+    //allocate memory on the device
+    cudaMalloc(&cudaWeightHidden, _numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaValuesHidden, _numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaWeightOut, _numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaValuesOut, _numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaYError, _numNeuronsOut * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaHError, _numNeuronsHidden * _numInputValuesX * _numInputValuesY * sizeof(float));
+    cudaMalloc(&cudaTrueOut, n * sizeof(float));
+    cudaMalloc(&cudaResults, n * sizeof(float));
+
+    cudaMemcpy(cudaWeightHidden, weightsHidden,  _numNeuronHidden * (_numNeuronInput + 1) * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(cudaValuesHidden, valuesHidden, _numNeuronHidden * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(cudaWeightOut, weightsOut, _numNeuronOut * (_numNeuronHidden + 1) * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(cudaValuesOut, valuesOut, _numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemvpy(cudaTrueOut, _valuesIn, n * sizeof(float), cudaMemcpyHostToDevice);
+
+    for(int i = 0; i < numIterations; i++)
+    {
+        forwardHidden<<<grid, block>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut, cudaYError, cudaHError, cudaTrueOut,
+         cudaResults, _numNeuronsHidden, _numneuronsIn, _numNeuronsOut, learning_rate, _numInputValuesX, numInputValuesY);
+
+         cudaDeviceSynchronize();
+    }
+
+    cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
+
+    return results;
+
 }
