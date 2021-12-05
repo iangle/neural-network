@@ -1,4 +1,4 @@
-#include "neuralNetworkGPU.h"
+#include "NeuralNetworkGPU.h"
 
 NeuralNetworkGPU::NeuralNetworkGPU(int* valuesIn, int numNeuronInput, int numNeuronHidden, int numNeuronOutput, int numInputValuesX, int numInputValuesY, float learningRate)
 {
