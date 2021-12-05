@@ -3,13 +3,13 @@ CC = g++
 
 make: project
 
-project: main.o gpuNN.o timing.o
-	$(NVCC) -arch=sm_52 -o neuralNetwork main.o gpuNN.o timing.o -I.
+project: main.o NeuralNetworkGPU.o timing.o
+	$(NVCC) -arch=sm_52 -o neuralNetwork main.o NeuralNetworkGPU.o timing.o -I.
 
 #cpuNN.o: neuralNetworkCPU.cpp
 #	$(CC) -c neuralNetworkCPU.cpp
 
-gpuNN.o: NeuralNetworkGPU.h NeuralNetworkGPU.cu
+NeuralNetworkGPU.o: NeuralNetworkGPU.h NeuralNetworkGPU.cu
 	${NVCC} -arch=sm_52 -c NeuralNetworkGPU.cu
 
 timing.o: timing.h timing.cpp 
