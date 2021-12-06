@@ -30,7 +30,7 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
 
     if(x >= numInputValuesX || y >= numInputValuesY) return;
 
-    printf("%d, %d", x, y);
+    printf("%d, %d ", x, y);
 
     float value = 0;
 
