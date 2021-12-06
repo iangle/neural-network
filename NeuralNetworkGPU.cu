@@ -45,22 +45,20 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     value = 0;
 
     // compute valuesOut
-    //for(int i = 0; i < numNeuronsOut; i++)
-    //{
+    for(int i = 0; i < numNeuronsOut; i++)
+    {
 
-        //for(int j = 0; j < numNeuronsHidden; j++)
-        value = value + valuesHidden[0 + idx * numNeuronsHidden] * weightOut[idx * (numNeuronsHidden + 1) + 1]; //double check
-        value = value + valuesHidden[1 + idx * numNeuronsHidden] * weightOut[idx * (numNeuronsHidden + 1) + 2];
-        value = value + valuesHidden[2 + idx * numNeuronsHidden] * weightOut[idx * (numNeuronsHidden + 1) + 3];
-
-        value = value + weightOut[idx * (numNeuronsHidden + 1)];
+        for(int j = 0; j < numNeuronsHidden; j++)
+            value = value + valuesHidden[j + idx * numNeuronsHidden] * weightOut[i + ((j + 1) * numNeuronsOut) + idx * numNeuronsHidden]; //double check
+        
+        value = value + weightOut[i + idx * numNeuronsOut];
         valuesOut[idx] = Sigmoid(static_cast<float>(value));
-    //}
+    }
 
-    // backwards propagation through the neural network
+    // backwards propagation start here
 
     //compute yError
-    yError[idx] = valuesOut[idx] * (1 - valuesOut[idx]) * (valuesOut[idx] - trueOut[idx]);
+        yError[idx] = valuesOut[idx] * (1 - valuesOut[idx]) * (valuesOut[idx] - trueOut[idx]);
 
 
     //compute hError
@@ -74,7 +72,7 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
         hError[i + idx * numNeuronsHidden] = temp * valuesHidden[i + idx * numNeuronsHidden] * (1 - valuesHidden[i + idx * numNeuronsHidden]);
     }
 
-    //adjust weights
+    //adjusting weights
     for(int i = 0; i < numNeuronsOut; i++)
         weightOut[i + idx * numNeuronsOut] = weightOut[i + idx * numNeuronsOut] - (learningRate * yError[i + idx * numNeuronsOut]);
     
@@ -94,7 +92,6 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
         weightHidden[i + 2 * numNeuronsHidden] = weightHidden[i + 2 * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y);
     }
 
-    //save results
     results[idx] = valuesOut[idx];
 }
 
