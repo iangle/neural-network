@@ -52,7 +52,7 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
             value = value + valuesHidden[j + idx * numNeuronsHidden] * weightOut[i + ((j + 1) * numNeuronsOut) + idx * numNeuronsHidden]; //double check
         
         value = value + weightOut[i + idx * numNeuronsOut];
-        valuesOut[i + idx * numNeuronsOut] = Sigmoid(static_cast<float>(value));
+        valuesOut[idx] = Sigmoid(static_cast<float>(value));
     }
 
     // backwards prop
