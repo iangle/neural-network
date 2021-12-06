@@ -57,6 +57,11 @@ int main()
 
 	GPUAnswer = NN_GPU.train(1000, 256);
 
+	for(int i = 0; i < ySize * xSize; i++)
+	{
+		cout << GPUAnswer[i] << ",";
+	}
+
 	now = currentTime();
 	gTimeCost = then - now;
 
