@@ -35,10 +35,10 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     // compute valuesHidden
     for(int i = 0; i < numNeuronsHidden; i++)
     {
-        value = value + x * weightHidden[i + numNeuronsHidden + idx * numNeuronsHidden];
-        value = value + y * weightHidden[i + (2 * numNeuronsHidden) + idx * numNeuronsHidden];
-        value = value + weightHidden[i + idx * numNeuronsHidden];
-        valuesHidden[i + idx * numNeuronsHidden] = Sigmoid(static_cast<float>(value));
+        value = value + x * weightHidden[i + numNeuronsHidden];
+        value = value + y * weightHidden[i + (2 * numNeuronsHidden)];
+        value = value + weightHidden[i + idx];
+        valuesHidden[i + idx] = Sigmoid(static_cast<float>(value));
         
     }
     
@@ -88,8 +88,8 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     {
         weightHidden[i + idx * numNeuronsOut] = weightHidden[i + idx * numNeuronsOut] - (learningRate * hError[i + idx * numNeuronsOut]);
 
-        weightHidden[i + 1 * numNeuronsHidden] = weightHidden[i + 1 * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * x);
-        weightHidden[i + 2 * numNeuronsHidden] = weightHidden[i + 2 * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y);
+        weightHidden[i + 1 * numNeuronsHidden] = weightHidden[i + 1 * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * );
+        weightHidden[i + 2 * numNeuronsHidden] = weightHidden[i + 2 * numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsOut] * y)x;
     }
 
     results[idx] = valuesOut[idx];
