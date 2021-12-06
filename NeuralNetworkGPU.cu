@@ -36,7 +36,7 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
     for(int i = 0; i < numNeuronsHidden; i++)
     {
         value = value + x * weightHidden[i + numNeuronsHidden + idx * numNeuronsHidden];
-        value = value + y * weightHidden[i + (2 * numNeuronsHidden) + idx * numNeuronsHidden]; //double check
+        value = value + y * weightHidden[i + (2 * numNeuronsHidden) + idx * numNeuronsHidden];
         value = value + weightHidden[i + idx * numNeuronsHidden];
         valuesHidden[i + idx * numNeuronsHidden] = Sigmoid(static_cast<float>(value));
         
