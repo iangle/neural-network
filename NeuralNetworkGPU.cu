@@ -28,8 +28,6 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
 
     int idx = y * numInputValuesY + x;
 
-    printf("%d ", idx);
-
     if(x >= numInputValuesX || y >= numInputValuesY) return;
 
     float value = 0;
@@ -143,8 +141,8 @@ float* NeuralNetworkGPU::train(int numIterations)
 
     dim3 blockSize, gridSize;
 
-    blockSize.x = 3;
-    blockSize.y = 4;
+    blockSize.x = _numInputValuesX;
+    blockSize.y = _numInputValuesY;
 
     gridSize.x = ceil((float) _numInputValuesX / blockSize.x);
     gridSize.y = ceil((float) _numInputValuesY / blockSize.y);
