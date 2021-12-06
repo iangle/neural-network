@@ -30,6 +30,8 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
 
     if(x >= numInputValuesX || y >= numInputValuesY) return;
 
+    printf("%d, %d", x, y);
+
     float value = 0;
 
     // compute valuesHidden
@@ -53,9 +55,6 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
         
         value = value + weightOut[i + idx * numNeuronsOut];
         valuesOut[idx] = Sigmoid(static_cast<float>(value));
-
-        if(x == 0)
-            printf("%f", value);
     }
 
     // backwards prop
