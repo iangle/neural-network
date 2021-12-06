@@ -26,7 +26,7 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
 
     int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    int idx = y * numInputValuesX + x;
+    int idx = y * numInputValuesY + x;
 
     if(x >= numInputValuesX || y >= numInputValuesY) return;
 
@@ -53,8 +53,6 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
         
         value = value + weightOut[i + idx * numNeuronsOut];
         valuesOut[idx] = Sigmoid(static_cast<float>(value));
-
-        printf("%d", idx);
     }
 
     // backwards prop
