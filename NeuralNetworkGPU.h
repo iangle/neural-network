@@ -36,6 +36,6 @@ public:
     NeuralNetworkGPU(int* valuesIn, int numNeuronInput, int numNeuronHidden, int numNeuronOutput,int numInputValuesX, int numInputValuesY, float learningRate);
 
     //train the neural network
-    float* train(int numIterations, int tile_width);
+    float* train(int numIterations);
 
 };

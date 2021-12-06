@@ -30,7 +30,7 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
 
     if(x >= numInputValuesX || y >= numInputValuesY) return;
 
-    printf("%d, %d ", x, y);
+    printf("%d,%d ", x, y);
 
     float value = 0;
 
@@ -135,15 +135,19 @@ void NeuralNetworkGPU::allocateMemoryCPU()
     valuesOut = (float*) malloc(_numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float));
 }
 
-float* NeuralNetworkGPU::train(int numIterations, int tile_width)
+float* NeuralNetworkGPU::train(int numIterations)
 {
-    int num_block = ceil((_numInputValuesX * _numInputValuesY) / (float) tile_width);
+    //int num_block = ceil((_numInputValuesX * _numInputValuesY) / (float) tile_width);
 
     int n = _numInputValuesX * _numInputValuesY;
 
-    //create our blocks and grids
-    dim3 block(tile_width, 1, 1);
-    dim3 grid(num_block, 1, 1);
+    dim3 blockSize, gridSize;
+
+    blockSize.x = 3;
+    blockSize.y = 4;
+
+    gridSize.x = ceil((float) _numInputValuesX / blockSize.x);
+    gridSize.y = ceil((float) _numInputValuesY / blockSize.y);
 
     //create some arrays that we will allocate on the device
     float* cudaWeightHidden;
@@ -175,7 +179,7 @@ float* NeuralNetworkGPU::train(int numIterations, int tile_width)
 
     for(int i = 0; i < numIterations; i++)
     {
-        forwardHidden<<<grid, block>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut, cudaYError, cudaHError, cudaTrueOut,
+        forwardHidden<<<gridSize, blockSize>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut, cudaYError, cudaHError, cudaTrueOut,
          cudaResults, _numNeuronHidden, _numNeuronInput, _numNeuronOut, learning_rate, _numInputValuesX, _numInputValuesY);
 
          cudaDeviceSynchronize();
