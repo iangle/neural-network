@@ -28,6 +28,8 @@ float* yError, float* hError, float* trueOut, float* results, int numNeuronsHidd
 
     int idx = y * numInputValuesY + x;
 
+    printf("%d ", idx);
+
     if(x >= numInputValuesX || y >= numInputValuesY) return;
 
     float value = 0;

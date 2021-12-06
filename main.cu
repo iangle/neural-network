@@ -38,9 +38,6 @@ int main()
 			input[k][1] = j;
 			output[k][0] = indata[i][j];
 			GPUOutput[k] = output[k][0];
-
-			cout << GPUOutput[k] << "\n";
-			
 			k ++;
 		}
 
@@ -58,7 +55,7 @@ int main()
 	
 	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
 
-	GPUAnswer = NN_GPU.train(100000);
+	GPUAnswer = NN_GPU.train(1);
 
 	for(int i = 0; i < ySize * xSize; i++)
 	{
