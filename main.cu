@@ -1,7 +1,7 @@
 #include <iostream>
 #include "timing.h"
 #include <iomanip>
-#include "neuralNetworkCPU.cpp"
+#include "NeuralNetworkCPU.cpp"
 #include "NeuralNetworkGPU.h"
 
 using namespace std;
