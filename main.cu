@@ -38,6 +38,9 @@ int main()
 			input[k][1] = j;
 			output[k][0] = indata[i][j];
 			GPUOutput[k] = output[k][0];
+
+			cout << GPUOutput[k] << "\n";
+			
 			k ++;
 		}
 
