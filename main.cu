@@ -42,11 +42,11 @@ int main()
 		}
 
 
-	bpNeuralNetwork<int> myBPNN;
+	//bpNeuralNetwork<int> myBPNN;
 	
 	//CPU Run and Timing Block.
 	then = currentTime();
-	myBPNN.training( input,output,64,0.02f,100000l,fx);
+	//myBPNN.training( input,output,64,0.02f,100000l,fx);
 	now = currentTime();
 	cTimeCost = then - now;
 
