@@ -55,7 +55,7 @@ int main()
 	
 	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
 
-	GPUAnswer = NN_GPU.train(1);
+	GPUAnswer = NN_GPU.train(100000);
 
 	for(int i = 0; i < ySize * xSize; i++)
 	{
