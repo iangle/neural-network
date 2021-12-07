@@ -139,8 +139,6 @@ void NeuralNetworkGPU::initializeNN()
         
     }
 
-    int length = sizeof(weightsHidden) / sizeof(weightsHidden[0]);
-
     //initialize the output layer with random numbers between (-.5,.5)
     for(int i = 0; i < _numNeuronOut; i++)
     {
