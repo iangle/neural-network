@@ -217,7 +217,7 @@ float* NeuralNetworkGPU::train(int numIterations)
 
     cout << "GPU Tests: \n";
     cout << "================== \n";
-    for(int i = 0; i < numIterations; i++)
+    for(int i = 1; i <= numIterations; i++)
     {
         forwardHidden<<<gridSize, blockSize>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut,
         _numNeuronHidden, _numNeuronOut, _numInputValuesX, _numInputValuesY);
@@ -237,10 +237,10 @@ float* NeuralNetworkGPU::train(int numIterations)
         cudaDeviceSynchronize();
         
         if(i == 10 || i == 100 || i == 1000 || i == 10000 || i == 100000 )
-	{
-	    cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
-            printResults(results, _valuesIn, _numInputValuesX, _numInputValuesY, i);
-	}
+	    {   
+	        cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
+                printResults(results, _valuesIn, _numInputValuesX, _numInputValuesY, i);
+	    }
     }
 
     cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);

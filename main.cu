@@ -1,6 +1,8 @@
 #include <iostream>
-#include "timing.h"
+#include <chrono>
+#include <ctime>
 #include <iomanip>
+#include "timing.h"
 #include "NeuralNetworkCPU.cpp"
 #include "NeuralNetworkGPU.h"
 
@@ -8,7 +10,6 @@ using namespace std;
 
 int main()
 {
-	float now, then, gTimeCost, cTimeCost;
 
 	int indata[8][8] = {
 							{ 1,1,1,1, 1,1,1,1},
@@ -21,16 +22,8 @@ int main()
 							{ 0,0,0,1, 1,1,1,1}
 						};
 
-	int indata2[8][8] = {
-							{ 1,1,1,1, 1,1,1,1},
-							{ 1,1,1,1, 1,1,1,1},
-							{ 1,1,1,1, 1,1,1,1},
-							{ 1,1,1,1, 1,1,1,1},
-							{ 1,1,1,1, 1,1,1,1},
-							{ 1,1,1,1, 1,1,1,1},
-							{ 1,1,1,1, 1,1,1,1},
-							{ 1,1,1,1, 1,1,1,0}
-						};
+	int indata2[64][64] = {0};
+	
 	float fx(float);
 
 	int xSize = 8;
@@ -47,7 +40,7 @@ int main()
 		{
 			input[k][0] = i;
 			input[k][1] = j;
-			output[k][0] = indata2[i][j];
+			output[k][0] = indata[i][j];
 			GPUOutput[k] = output[k][0];
 			k ++;
 		}
@@ -56,22 +49,25 @@ int main()
 	bpNeuralNetwork<int> myBPNN;
 	
 	//CPU Run and Timing Block.
-	then = currentTime();
-	myBPNN.training( input,output,64,0.02f,100000l,fx);
-	now = currentTime();
-	cTimeCost = then - now;
+	auto then = chrono::system_clock::now();
+	myBPNN.training(input,output,64,0.02f,100000l,fx);
+	auto now = chrono::system_clock::now(); 
+	chrono::duration<double> cTimeCost = (now - then);
 
 	//GPU Run and Timing Block.
-	then = currentTime();
+
 	
 	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
 
-	GPUAnswer = NN_GPU.train(10000);
+	then = chrono::system_clock::now();
+	
+	GPUAnswer = NN_GPU.train(100000);
 
-	now = currentTime();
-	gTimeCost = then - now;
+	now = chrono::system_clock::now();
 
-	printTimes(gTimeCost, cTimeCost);
+	chrono::duration<double> gTimeCost = (now - then);
+
+	printTimes(gTimeCost.count(), cTimeCost.count());
 
 	cout << "\n\n\n                Press any key to exit!";
 	getchar();

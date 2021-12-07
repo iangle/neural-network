@@ -6,12 +6,12 @@
 
 using namespace std;
 
-double currentTime(){
+float currentTime(){
 
    struct timeval now;
    gettimeofday(&now, NULL);
    
-   return now.tv_sec + now.tv_usec/1000000.0;
+   return (float) now.tv_sec + now.tv_usec/1000000.0;
 }
 
 /* Subtract the `struct timeval' value 'then' from 'now',
@@ -49,7 +49,7 @@ float elapsedTime(struct timeval now, struct timeval then){
 }
 
 //Takes the GPU and CPU time cost and prints the values and speedup factor. 
-void printTimes(float gTimeCost, float cTimeCost)
+void printTimes(double gTimeCost, double cTimeCost)
 {
 	cout << "Time Tests:\n";
    cout << "==================\n";
