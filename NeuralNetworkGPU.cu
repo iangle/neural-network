@@ -187,9 +187,11 @@ float* NeuralNetworkGPU::train(int numIterations)
 
         cudaDeviceSynchronize();
         
-        cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
         if(i == 10 || i == 100 || i == 1000 || i == 10000 || i == 100000 )
+	{
+	    cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
             printResults(results, _valuesIn, _numInputValuesX, _numInputValuesY, i);
+	}
     }
 
     cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
