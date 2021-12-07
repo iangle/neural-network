@@ -51,7 +51,9 @@ float elapsedTime(struct timeval now, struct timeval then){
 //Takes the GPU and CPU time cost and prints the values and speedup factor. 
 void printTimes(float gTimeCost, float cTimeCost)
 {
-	cout << setprecision(3) << "Training the network via the CPU resulted in a time cost of " << cTimeCost << " in seconds.\n";
+	cout << "Time Tests:\n";
+   cout << "==================\n";
+   cout << setprecision(3) << "Training the network via the CPU resulted in a time cost of " << cTimeCost << " in seconds.\n";
    cout << setprecision(3) << "Training the network via the GPU resulted in a time cost of " << gTimeCost << " in seconds.\n";
 	cout << setprecision(3) << "Training with the GPU resulted in a speed up factor of " << cTimeCost/gTimeCost << ".\n";
 }

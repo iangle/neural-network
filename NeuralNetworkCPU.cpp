@@ -146,7 +146,8 @@ template <class T> class bpNeuralNetwork
 
 		//Initiate the bpNetwork
 
-		
+		cout << "\nCPU Tests:\n";
+		cout << "==================\n";
 		for(iterate = 1; iterate <= maxNumTrainIterate; iterate ++)
 		{
 			for(i = 0; i < numTrainSample; i++)
@@ -223,7 +224,7 @@ template <class T> class bpNeuralNetwork
 			
 			if(iterate == 10 || iterate == 100 || iterate == 1000 || iterate == 10000 || iterate == 100000)
 			{
-				cout << "\n\nOuput values after " << iterate << " iterations: \n";
+				cout << "Ouput values after " << iterate << " iterations: \n";
 				for(m = 0; m < 8; m++)
 				{
 					for(k = 0; k < 8; k ++)
@@ -239,7 +240,7 @@ template <class T> class bpNeuralNetwork
 					cout << "\n";
 		
 				}
-				cout << "==> " << numE << "  errors";
+				cout << "==> " << numE << "  errors\n\n";
 				numE = 0;
                 
 			} // 

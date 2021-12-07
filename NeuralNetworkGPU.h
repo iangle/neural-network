@@ -37,5 +37,12 @@ public:
 
     //train the neural network
     float* train(int numIterations);
+    
+    /*// mytrim to make the result a precision of 3 digit
+    float mytrim(float x);*/
 
+    //Method that contains the print routine for the CUDA results.
+    void printResults(float* results, int* trueRes, int _numInputValuesX, int _numInputValuesY, int iteration);
 };
+
+
