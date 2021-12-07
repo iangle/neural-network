@@ -41,7 +41,6 @@ int main()
 			k ++;
 		}
 
-
 	bpNeuralNetwork<int> myBPNN;
 	
 	//CPU Run and Timing Block.

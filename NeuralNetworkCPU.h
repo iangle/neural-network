@@ -22,5 +22,5 @@ class neuralNetworkCPU
     };
 
     float fx(float x);
-    float myTrim(float x);
+    float mytrim(float x);
 };
