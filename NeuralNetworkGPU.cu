@@ -84,12 +84,10 @@ float* yError, float* hError, int* trueOut, int numNeuronsHidden, int numInputVa
     {
         temp = 0;
 
-		//for(int j = 0; j < numNeuronsOut; j++)
 		temp = temp + weightOut[((i + 1) * numNeuronsHidden)] * yError[idx];
 
         hError[i + idx * numNeuronsHidden] = temp * valuesHidden[i + idx * numNeuronsHidden] * (1 - valuesHidden[i + idx * numNeuronsHidden]);
 
-        //printf("idx: %d: hError: %f\n", idx, hError[i + idx * numNeuronsHidden]);
     }
 }
 
@@ -105,18 +103,13 @@ float* results, int numNeuronsHidden, int numNeuronsOut, float learningRate, int
     if(x >= numInputValuesX || y >= numInputValuesY) return;
 
     //adjusting weights out
-    //for(int i = 0; i < numNeuronsOut; i++)
         weightOut[idx * numNeuronsHidden] = weightOut[idx * numNeuronsHidden] - (learningRate * yError[idx]);
 
-    //printf("idx: %d weights: %f\n", idx, weightOut[0]);
     
-    //for(int i = 0; i < numNeuronsOut; i++)
-    //{
         for(int j = 0; j < numNeuronsHidden; j++)
         {
             weightOut[(j + 1) * numNeuronsHidden] = weightOut[(j + 1) * numNeuronsHidden] - (learningRate * yError[idx] * valuesHidden[j + idx * numNeuronsHidden]);
         }
-    //}
 
     //adjusting weights hidden
     for (int i = 0; i < numNeuronsHidden; i++)
@@ -125,8 +118,6 @@ float* results, int numNeuronsHidden, int numNeuronsOut, float learningRate, int
 
         weightHidden[i + numNeuronsHidden] = weightHidden[i + numNeuronsHidden] - (learningRate * hError[i + idx * numNeuronsHidden] * x);
         weightHidden[i + (2 * numNeuronsHidden)] = weightHidden[i + (2 * numNeuronsHidden)] - (learningRate * hError[i + idx * numNeuronsHidden] * y);
-
-        //printf("idx: %d weights: %f\n", idx, weightHidden[i + idx * numNeuronsHidden]);
     }
 
     //saving output values in results
@@ -174,8 +165,6 @@ void NeuralNetworkGPU::allocateMemoryCPU()
 
 float* NeuralNetworkGPU::train(int numIterations)
 {
-    //int num_block = ceil((_numInputValuesX * _numInputValuesY) / (float) tile_width);
-
     int n = _numInputValuesX * _numInputValuesY;
 
     dim3 blockSize, gridSize;
@@ -218,6 +207,7 @@ float* NeuralNetworkGPU::train(int numIterations)
 
     cout << "GPU Tests: \n";
     cout << "================== \n";
+
     for(int i = 1; i <= numIterations; i++)
     {
         forwardHidden<<<gridSize, blockSize>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut,

@@ -23,7 +23,6 @@ int main()
 						};
 
 	int indata2[64][64] = {0};
-	
 	float fx(float);
 
 	int xSize = 8;
@@ -44,6 +43,7 @@ int main()
 			GPUOutput[k] = output[k][0];
 			k ++;
 		}
+
 
 	bpNeuralNetwork<int> myBPNN;
 	
