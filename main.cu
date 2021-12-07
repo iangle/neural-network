@@ -20,6 +20,17 @@ int main()
 							{ 0,0,0,0, 0,1,1,1},
 							{ 0,0,0,1, 1,1,1,1}
 						};
+
+	int indata2[8][8] = {
+							{ 1,1,1,1, 1,1,1,1},
+							{ 1,1,1,1, 1,1,1,1},
+							{ 1,1,1,1, 1,1,1,1},
+							{ 1,1,1,1, 1,1,1,1},
+							{ 1,1,1,1, 1,1,1,1},
+							{ 1,1,1,1, 1,1,1,1},
+							{ 1,1,1,1, 1,1,1,1},
+							{ 1,1,1,1, 1,1,1,0}
+						};
 	float fx(float);
 
 	int xSize = 8;
@@ -36,7 +47,7 @@ int main()
 		{
 			input[k][0] = i;
 			input[k][1] = j;
-			output[k][0] = indata[i][j];
+			output[k][0] = indata2[i][j];
 			GPUOutput[k] = output[k][0];
 			k ++;
 		}
@@ -54,7 +65,7 @@ int main()
 	
 	NeuralNetworkGPU::NeuralNetworkGPU NN_GPU(GPUOutput, 2, 3, 1, 8, 8, 0.02f);
 
-	GPUAnswer = NN_GPU.train(100000);
+	GPUAnswer = NN_GPU.train(10000);
 
 	now = currentTime();
 	gTimeCost = then - now;
