@@ -53,11 +53,11 @@ int main()
 		}
 
 
-	//bpNeuralNetwork<int> myBPNN;
+	bpNeuralNetwork<int> myBPNN;
 	
 	//CPU Run and Timing Block.
 	then = currentTime();
-	//myBPNN.training( input,output,64,0.02f,100000l,fx);
+	myBPNN.training( input,output,64,0.02f,100000l,fx);
 	now = currentTime();
 	cTimeCost = then - now;
 
@@ -68,24 +68,12 @@ int main()
 
 	GPUAnswer = NN_GPU.train(10000);
 
-	for(int i = 0; i < ySize * xSize; i++)
-	{
-		cout << GPUAnswer[i] << ",";
-	}
-
 	now = currentTime();
 	gTimeCost = then - now;
+
+	printTimes(gTimeCost, cTimeCost);
 
 	cout << "\n\n\n                Press any key to exit!";
 	getchar();
 	return 0;
-}
-
-//Takes the GPU and CPU time cost and prints the values and speedup factor. 
-void printTimes(float gTimeCost, float cTimeCost)
-{
-	cout << setprecision(3) << "Training the network via the CPU resulted in a time cost of " << cTimeCost << " in seconds.\n";
-    cout << setprecision(3) << "Training the network via the GPU resulted in a time cost of " << gTimeCost << " in seconds.\n";
-	cout << setprecision(3) << "Training with the GPU resulted in a speed up factor of " << cTimeCost/gTimeCost << ".\n";
-
 }

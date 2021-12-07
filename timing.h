@@ -12,4 +12,7 @@ float elapsedTime(struct timeval now, struct timeval then);
 
 double currentTime();
 
+//Takes the GPU time and CPU time, compares, and prints.
+void printTimes(float gTimeCost, float cTimeCost);
+
 #endif

@@ -1,4 +1,8 @@
 #include "NeuralNetworkGPU.h"
+#include <iomanip>
+#include <iostream>
+
+using namespace std;
 
 NeuralNetworkGPU::NeuralNetworkGPU(int* valuesIn, int numNeuronInput, int numNeuronHidden, int numNeuronOutput, int numInputValuesX, int numInputValuesY, float learningRate)
 {
@@ -211,6 +215,8 @@ float* NeuralNetworkGPU::train(int numIterations)
     cudaMemcpy(cudaValuesOut, valuesOut, _numNeuronOut * _numInputValuesX * _numInputValuesY * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(cudaTrueOut, _valuesIn, n * sizeof(int), cudaMemcpyHostToDevice);
 
+    cout << "GPU Tests: \n";
+    cout << "================== \n";
     for(int i = 0; i < numIterations; i++)
     {
         forwardHidden<<<gridSize, blockSize>>>(cudaWeightHidden, cudaValuesHidden, cudaWeightOut, cudaValuesOut,
@@ -229,6 +235,12 @@ float* NeuralNetworkGPU::train(int numIterations)
         cudaYError, cudaHError, cudaResults, _numNeuronHidden, _numNeuronOut, learning_rate, _numInputValuesX, _numInputValuesY);
         
         cudaDeviceSynchronize();
+        
+        if(i == 10 || i == 100 || i == 1000 || i == 10000 || i == 100000 )
+	{
+	    cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
+            printResults(results, _valuesIn, _numInputValuesX, _numInputValuesY, i);
+	}
     }
 
     cudaMemcpy(results, cudaResults, sizeof(float) * n, cudaMemcpyDeviceToHost);
@@ -249,5 +261,37 @@ float* NeuralNetworkGPU::train(int numIterations)
     free(_valuesIn);
 
     return results;
-
 }
+
+//Method that contains the print routine for the CUDA results.
+void NeuralNetworkGPU::printResults(float* results, int* trueRes, int _numInputValuesX, int _numInputValuesY, int iteration)
+{
+    int errors = 0;
+    int j, k;
+    cout << "Ouput values after " << iteration << " iterations: \n";
+	for(j = 0; j < 8; j++)
+	{
+		for(k = 0; k < 8; k ++)
+        {
+			if ( (int)(results[j * 8 + k] + 0.5) == trueRes[j * 8 + k])
+			{
+				cout << setw(6) << results[j * 8 + k] << "  ";
+			}
+		    else
+			{
+				cout << setw(6) << results[j * 8 + k] << "* ";
+				errors++;
+			}
+        }
+			cout << "\n";
+	}
+	cout << "==> " << errors << "  errors\n\n";
+}
+
+/*// mytrim to make the result a precision of 3 digit
+float mytrim(float x)
+{
+	int a = 0;
+	a = static_cast<int>(x * 1000 + 0.5);      // keep a precision of 3 digit
+	return (static_cast<float>(a) / 1000);
+}*/
