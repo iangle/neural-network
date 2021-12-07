@@ -1,6 +1,10 @@
 #include "timing.h"
 #include <sys/time.h>
 #include <stdlib.h>
+#include <iomanip>
+#include <iostream>
+
+using namespace std;
 
 double currentTime(){
 
@@ -42,4 +46,12 @@ float elapsedTime(struct timeval now, struct timeval then){
   
   
    return tv_sec + tv_usec / 1000000.0;
+}
+
+//Takes the GPU and CPU time cost and prints the values and speedup factor. 
+void printTimes(float gTimeCost, float cTimeCost)
+{
+	cout << setprecision(3) << "Training the network via the CPU resulted in a time cost of " << cTimeCost << " in seconds.\n";
+   cout << setprecision(3) << "Training the network via the GPU resulted in a time cost of " << gTimeCost << " in seconds.\n";
+	cout << setprecision(3) << "Training with the GPU resulted in a speed up factor of " << cTimeCost/gTimeCost << ".\n";
 }
