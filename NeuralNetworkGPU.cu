@@ -1,6 +1,7 @@
 #include "NeuralNetworkGPU.h"
 #include <iomanip>
 #include <iostream>
+#include "NeuralNetworkCPU.h"
 
 using namespace std;
 
@@ -275,11 +276,11 @@ void NeuralNetworkGPU::printResults(float* results, int* trueRes, int _numInputV
         {
 			if ( (int)(results[j * 8 + k] + 0.5) == trueRes[j * 8 + k])
 			{
-				cout << setw(6) << results[j * 8 + k] << "  ";
+				cout << setw(6) << trim(results[j * 8 + k]) << "  ";
 			}
 		    else
 			{
-				cout << setw(6) << results[j * 8 + k] << "* ";
+				cout << setw(6) << trim(results[j * 8 + k]) << "* ";
 				errors++;
 			}
         }
@@ -288,10 +289,10 @@ void NeuralNetworkGPU::printResults(float* results, int* trueRes, int _numInputV
 	cout << "==> " << errors << "  errors\n\n";
 }
 
-/*// mytrim to make the result a precision of 3 digit
-float mytrim(float x)
+// trim to make the result a precision of 3 digit
+float NeuralNetworkGPU::trim(float x)
 {
 	int a = 0;
 	a = static_cast<int>(x * 1000 + 0.5);      // keep a precision of 3 digit
 	return (static_cast<float>(a) / 1000);
-}*/
+}
